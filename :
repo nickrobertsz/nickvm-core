@@ -1,0 +1,32 @@
+[1mdiff --git a/src/main.rs b/src/main.rs[m
+[1mindex cacafeb..31de26b 100644[m
+[1m--- a/src/main.rs[m
+[1m+++ b/src/main.rs[m
+[36m@@ -85,7 +85,7 @@[m [mstruct Bridge {[m
+ impl Bridge {[m
+     fn init() -> Result<Self> {[m
+         let mut child = Command::new("python3")[m
+[31m-        .arg("../runtime/bridge_runtime.py")[m
+[32m+[m[32m        .arg("../runtime/current_runtime.py")[m
+         .stdin(Stdio::piped())[m
+         .stdout(Stdio::piped())[m
+         .spawn()[m
+[36m@@ -190,6 +190,18 @@[m [mfn main() -> Result<()> {[m
+     blackbox.note_bridge_message(&update_line);[m
+     let update_json: Value = serde_json::from_str(&update_line)?;[m
+     blackbox.log("auntie_up", "update_check", update_json.clone())?;[m
+[32m+[m[32m    bridge.send(&json!({"type":"crash_me"}))?;[m
+[32m+[m[32m    let crash_line = bridge.recv_line()?;[m
+[32m+[m[32m    blackbox.note_bridge_message(&crash_line);[m
+[32m+[m[32m    let crash_json: Value = serde_json::from_str(&crash_line)?;[m
+[32m+[m[32m    blackbox.log("runtime", "intentional_crash_test", crash_json.clone())?;[m
+[32m+[m[32m    if crash_json.get("type").and_then(|v| v.as_str()) == Some("error") {[m
+[32m+[m[32m        notes.push("Intentional crash test produced runtime error".into());[m
+[32m+[m[32m        blackbox.write_summary("crash", &notes)?;[m
+[32m+[m[32m        anyhow::bail!("runtime returned error during intentional crash test");[m
+[32m+[m[32m    }[m
+[32m+[m[32m    notes.push("Intentional crash test completed".into());[m
+[32m+[m
+     notes.push("Updater scaffold check completed".into());[m
+ [m
+     // 7) tiny heartbeat[m
