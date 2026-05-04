@@ -284,6 +284,36 @@ fn main() -> Result<()> {
 
             continue;
         }
+        if cmd == "theme get" {
+            bridge.send(&json!({"type":"theme_get"}))?;
+
+            let reply = bridge.recv_json()?;
+
+            blackbox.note_bridge_message(&reply.to_string());
+
+            println!("Current theme:");
+            println!("{}", reply);
+
+            continue;
+        }
+
+        if cmd.starts_with("theme set ") {
+            let accent = cmd.trim_start_matches("theme set ").trim();
+
+            bridge.send(&json!({
+                "type":"theme_set",
+                "accent": accent
+            }))?;
+
+            let reply = bridge.recv_json()?;
+
+            blackbox.note_bridge_message(&reply.to_string());
+
+            println!("Theme updated:");
+            println!("{}", reply);
+
+            continue;
+        }
         println!("Unknown command");
     }
 
