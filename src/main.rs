@@ -261,12 +261,12 @@ fn main() -> Result<()> {
         if cmd == "ping" {
             bridge.send(&json!({"type":"ping"}))?;
 
-            let line = bridge.recv_line()?;
+            let reply = bridge.recv_json()?;
 
-            blackbox.note_bridge_message(&line);
+            blackbox.note_bridge_message(&reply.to_string());
 
             println!("Runtime replied:");
-            println!("{}", line);
+            println!("{}", reply);
 
             continue;
         }
