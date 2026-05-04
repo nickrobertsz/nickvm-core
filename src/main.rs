@@ -238,5 +238,41 @@ fn main() -> Result<()> {
     // tiny pause so output order is easy to read if needed
     thread::sleep(Duration::from_millis(100));
 
+    use std::io::{stdin, stdout};
+
+    println!("\nNickShell v0.1");
+    println!("Type 'ping' or 'exit'\n");
+
+    loop {
+        let mut input = String::new();
+
+        print!("NickShell> ");
+        stdout().flush()?;
+
+        stdin().read_line(&mut input)?;
+
+        let cmd = input.trim();
+
+        if cmd == "exit" {
+            println!("Exiting NickShell...");
+            break;
+        }
+
+        if cmd == "ping" {
+            bridge.send(&json!({"type":"ping"}))?;
+
+            let line = bridge.recv_line()?;
+
+            blackbox.note_bridge_message(&line);
+
+            println!("Runtime replied:");
+            println!("{}", line);
+
+            continue;
+        }
+
+        println!("Unknown command");
+    }
+
     Ok(())
 }
