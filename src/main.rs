@@ -270,7 +270,20 @@ fn main() -> Result<()> {
 
             continue;
         }
+        if cmd.starts_with("whois ") {
+            let name = cmd.trim_start_matches("whois ").trim();
 
+            bridge.send(&json!({"type":"whois","name":name}))?;
+
+            let reply = bridge.recv_json()?;
+
+            blackbox.note_bridge_message(&reply.to_string());
+
+            println!("Registry replied:");
+            println!("{}", reply);
+
+            continue;
+        }
         println!("Unknown command");
     }
 
