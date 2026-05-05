@@ -141,6 +141,21 @@ fn print_help() {
     println!("  help");
     println!("  exit\n");
 }
+fn handle_ping(
+    bridge: &mut Bridge,
+    blackbox: &mut Blackbox,
+) -> Result<()> {
+    bridge.send(&json!({"type":"ping"}))?;
+
+    let reply = bridge.recv_json()?;
+
+    blackbox.note_bridge_message(&reply.to_string());
+
+    println!("Runtime replied:");
+    println!("{}", reply);
+
+    Ok(())
+}
 fn main() -> Result<()> {
     let mut notes = Vec::<String>::new();
     let mut blackbox = Blackbox::new()?;
@@ -298,15 +313,7 @@ fn main() -> Result<()> {
         }
 
         if cmd == "ping" {
-            bridge.send(&json!({"type":"ping"}))?;
-
-            let reply = bridge.recv_json()?;
-
-            blackbox.note_bridge_message(&reply.to_string());
-
-            println!("Runtime replied:");
-            println!("{}", reply);
-
+            handle_ping(&mut bridge, &mut blackbox)?;
             continue;
         }
         if cmd.starts_with("whois ") {
