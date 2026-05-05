@@ -2,7 +2,7 @@ use anyhow::{Context, Result};
 use chrono::Utc;
 use serde_json::{json, Value};
 use std::collections::VecDeque;
-use std::fs::{self, File, OpenOptions};
+use std::fs::{self, File, OpenOptions, read_to_string};
 use std::io::{BufRead, BufReader, Write};
 use std::path::PathBuf;
 use std::process::{Child, ChildStdin, ChildStdout, Command, Stdio};
@@ -153,6 +153,17 @@ fn handle_ping(
 
     println!("Runtime replied:");
     println!("{}", reply);
+
+    Ok(())
+}
+fn handle_logs_last(
+    blackbox: &Blackbox,
+) -> Result<()> {
+    let summary_path = blackbox.session_dir.join("summary.md");
+
+    let contents = read_to_string(summary_path)?;
+
+    println!("\n{}", contents);
 
     Ok(())
 }
@@ -314,6 +325,10 @@ fn main() -> Result<()> {
 
         if cmd == "ping" {
             handle_ping(&mut bridge, &mut blackbox)?;
+            continue;
+        }
+        if cmd == "logs last" {
+            handle_logs_last(&blackbox)?;
             continue;
         }
         if cmd.starts_with("whois ") {
