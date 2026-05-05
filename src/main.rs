@@ -136,6 +136,8 @@ fn main() -> Result<()> {
     let mut notes = Vec::<String>::new();
     let mut blackbox = Blackbox::new()?;
 
+    let shell_start = Instant::now();
+
     blackbox.log("core", "system_start", json!({}))?;
     notes.push("Rust core started".into());
 
@@ -264,8 +266,32 @@ fn main() -> Result<()> {
             println!("  whois <service>");
             println!("  theme get");
             println!("  theme set <hex>");
+            println!("  status");
             println!("  help");
             println!("  exit\n");
+
+            continue;
+        }
+
+        if cmd == "status" {
+            let uptime = shell_start.elapsed();
+
+            bridge.send(&json!({"type":"theme_get"}))?;
+
+            let reply = bridge.recv_json()?;
+
+            blackbox.note_bridge_message(&reply.to_string());
+
+            let accent = reply["theme"]["accent"]
+            .as_str()
+            .unwrap_or("unknown");
+
+            println!("\nNickOS Status");
+            println!("--------------");
+            println!("Session: {}", blackbox.session_id);
+            println!("Runtime PID: {}", bridge.pid());
+            println!("Theme Accent: {}", accent);
+            println!("Uptime: {}s\n", uptime.as_secs());
 
             continue;
         }
