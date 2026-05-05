@@ -148,6 +148,7 @@ fn print_help() {
     println!("  fofoca test");
     println!("  fofoca stream");
     println!("  app run <app>");
+    println!("  app pipe <producer> <consumer>");
     println!("  help");
     println!("  exit\n");
 }
@@ -191,6 +192,33 @@ fn handle_app_run(app_name: &str) -> Result<()> {
     .status()?;
 
     println!("App exited with: {}", status);
+
+    Ok(())
+}
+fn handle_app_pipe(producer: &str, consumer: &str) -> Result<()> {
+    let producer_path = format!("apps/{}/main.py", producer);
+    let consumer_path = format!("apps/{}/main.py", consumer);
+
+    println!("Launching pipeline: {} → {}", producer, consumer);
+
+    let mut producer_child = Command::new("python3")
+    .arg(producer_path)
+    .stdout(Stdio::piped())
+    .spawn()?;
+
+    let producer_stdout = producer_child.stdout.take()
+    .context("producer stdout unavailable")?;
+
+    let mut consumer_child = Command::new("python3")
+    .arg(consumer_path)
+    .stdin(Stdio::from(producer_stdout))
+    .spawn()?;
+
+    let producer_status = producer_child.wait()?;
+    let consumer_status = consumer_child.wait()?;
+
+    println!("Producer exited with: {}", producer_status);
+    println!("Consumer exited with: {}", consumer_status);
 
     Ok(())
 }
@@ -466,6 +494,19 @@ fn main() -> Result<()> {
             let app_name = cmd.trim_start_matches("app run ").trim();
 
             handle_app_run(app_name)?;
+
+            continue;
+        }
+        if cmd.starts_with("app pipe ") {
+            let rest = cmd.trim_start_matches("app pipe ").trim();
+            let parts: Vec<&str> = rest.split_whitespace().collect();
+
+            if parts.len() != 2 {
+                println!("Usage: app pipe <producer> <consumer>");
+                continue;
+            }
+
+            handle_app_pipe(parts[0], parts[1])?;
 
             continue;
         }
