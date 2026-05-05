@@ -10,6 +10,9 @@ use std::thread;
 use std::time::{Duration, Instant};
 use uuid::Uuid;
 
+const NICKVM_VERSION: &str = "0.1.0";
+const FOFOCA_PROTOCOL_VERSION: &str = "0.1";
+
 struct Blackbox {
     session_id: String,
     session_dir: PathBuf,
@@ -140,6 +143,7 @@ fn print_help() {
     println!("  status");
     println!("  clear");
     println!("  logs last");
+    println!("  version");
     println!("  help");
     println!("  exit\n");
 }
@@ -172,6 +176,12 @@ fn handle_logs_last(
 fn handle_clear() -> Result<()> {
     Command::new("clear").status()?;
     Ok(())
+}
+fn print_version() {
+    println!("\nNickOS Versions");
+    println!("----------------");
+    println!("NickVM Core: {}", NICKVM_VERSION);
+    println!("Fofoca Protocol: {}\n", FOFOCA_PROTOCOL_VERSION);
 }
 fn main() -> Result<()> {
     let mut notes = Vec::<String>::new();
@@ -339,6 +349,10 @@ fn main() -> Result<()> {
         }
         if cmd == "clear" {
             handle_clear()?;
+            continue;
+        }
+        if cmd == "version" {
+            print_version();
             continue;
         }
         if cmd.starts_with("whois ") {
