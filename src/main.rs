@@ -146,6 +146,7 @@ fn print_help() {
     println!("  version");
     println!("  services");
     println!("  fofoca test");
+    println!("  fofoca stream");
     println!("  help");
     println!("  exit\n");
 }
@@ -405,6 +406,27 @@ fn main() -> Result<()> {
 
             println!("\nFofoca event received:");
             println!("{}", reply);
+
+            continue;
+        }
+
+        if cmd == "fofoca stream" {
+            bridge.send(&json!({"type":"fofoca_stream"}))?;
+
+            println!("\nListening to live Fofoca stream...\n");
+
+            loop {
+                let reply = bridge.recv_json()?;
+
+                blackbox.note_bridge_message(&reply.to_string());
+
+                println!("{}", reply);
+
+                if reply["type"] == "fofoca_stream_complete" {
+                    println!("\nFofoca stream ended.\n");
+                    break;
+                }
+            }
 
             continue;
         }
