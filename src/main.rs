@@ -138,6 +138,8 @@ fn print_help() {
     println!("  theme get");
     println!("  theme set <hex>");
     println!("  status");
+    println!("  clear");
+    println!("  logs last");
     println!("  help");
     println!("  exit\n");
 }
@@ -165,6 +167,10 @@ fn handle_logs_last(
 
     println!("\n{}", contents);
 
+    Ok(())
+}
+fn handle_clear() -> Result<()> {
+    Command::new("clear").status()?;
     Ok(())
 }
 fn main() -> Result<()> {
@@ -329,6 +335,10 @@ fn main() -> Result<()> {
         }
         if cmd == "logs last" {
             handle_logs_last(&blackbox)?;
+            continue;
+        }
+        if cmd == "clear" {
+            handle_clear()?;
             continue;
         }
         if cmd.starts_with("whois ") {
