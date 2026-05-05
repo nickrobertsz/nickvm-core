@@ -258,6 +258,18 @@ fn main() -> Result<()> {
             break;
         }
 
+        if cmd == "help" {
+            println!("\nAvailable commands:");
+            println!("  ping");
+            println!("  whois <service>");
+            println!("  theme get");
+            println!("  theme set <hex>");
+            println!("  help");
+            println!("  exit\n");
+
+            continue;
+        }
+
         if cmd == "ping" {
             bridge.send(&json!({"type":"ping"}))?;
 
