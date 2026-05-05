@@ -20,7 +20,7 @@ def verdict_for_latency(latency):
 
 print("PingGoblin.tia awakening...\n", flush=True)
 
-for i in range(15):
+for i in range(5):
     try:
         result = subprocess.run(
             ["ping", "-c", "1", "google.com"],

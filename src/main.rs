@@ -147,6 +147,7 @@ fn print_help() {
     println!("  services");
     println!("  fofoca test");
     println!("  fofoca stream");
+    println!("  app run <app>");
     println!("  help");
     println!("  exit\n");
 }
@@ -178,6 +179,19 @@ fn handle_logs_last(
 }
 fn handle_clear() -> Result<()> {
     Command::new("clear").status()?;
+    Ok(())
+}
+fn handle_app_run(app_name: &str) -> Result<()> {
+    let app_path = format!("apps/{}/main.py", app_name);
+
+    println!("Launching app: {}", app_name);
+
+    let status = Command::new("python3")
+    .arg(app_path)
+    .status()?;
+
+    println!("App exited with: {}", status);
+
     Ok(())
 }
 fn print_version() {
@@ -445,6 +459,13 @@ fn main() -> Result<()> {
 
             println!("Theme updated:");
             println!("{}", reply);
+
+            continue;
+        }
+        if cmd.starts_with("app run ") {
+            let app_name = cmd.trim_start_matches("app run ").trim();
+
+            handle_app_run(app_name)?;
 
             continue;
         }
