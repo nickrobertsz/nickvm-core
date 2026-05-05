@@ -88,7 +88,7 @@ struct Bridge {
 impl Bridge {
     fn init() -> Result<Self> {
         let mut child = Command::new("python3")
-        .arg("../runtime/current_runtime.py")
+        .arg("runtime/current_runtime.py")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
