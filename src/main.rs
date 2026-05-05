@@ -131,7 +131,16 @@ impl Bridge {
         Ok(self.child.try_wait()?)
     }
 }
-
+fn print_help() {
+    println!("\nAvailable commands:");
+    println!("  ping");
+    println!("  whois <service>");
+    println!("  theme get");
+    println!("  theme set <hex>");
+    println!("  status");
+    println!("  help");
+    println!("  exit\n");
+}
 fn main() -> Result<()> {
     let mut notes = Vec::<String>::new();
     let mut blackbox = Blackbox::new()?;
@@ -261,15 +270,7 @@ fn main() -> Result<()> {
         }
 
         if cmd == "help" {
-            println!("\nAvailable commands:");
-            println!("  ping");
-            println!("  whois <service>");
-            println!("  theme get");
-            println!("  theme set <hex>");
-            println!("  status");
-            println!("  help");
-            println!("  exit\n");
-
+            print_help();
             continue;
         }
 
