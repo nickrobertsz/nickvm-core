@@ -144,6 +144,7 @@ fn print_help() {
     println!("  clear");
     println!("  logs last");
     println!("  version");
+    println!("  services");
     println!("  help");
     println!("  exit\n");
 }
@@ -353,6 +354,18 @@ fn main() -> Result<()> {
         }
         if cmd == "version" {
             print_version();
+            continue;
+        }
+        if cmd == "services" {
+            bridge.send(&json!({"type":"services"}))?;
+
+            let reply = bridge.recv_json()?;
+
+            blackbox.note_bridge_message(&reply.to_string());
+
+            println!("\nRegistered Services:");
+            println!("{}", reply);
+
             continue;
         }
         if cmd.starts_with("whois ") {
