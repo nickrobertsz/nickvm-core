@@ -145,6 +145,7 @@ fn print_help() {
     println!("  logs last");
     println!("  version");
     println!("  services");
+    println!("  fofoca test");
     println!("  help");
     println!("  exit\n");
 }
@@ -390,6 +391,19 @@ fn main() -> Result<()> {
             blackbox.note_bridge_message(&reply.to_string());
 
             println!("Current theme:");
+            println!("{}", reply);
+
+            continue;
+        }
+
+        if cmd == "fofoca test" {
+            bridge.send(&json!({"type":"fofoca_test"}))?;
+
+            let reply = bridge.recv_json()?;
+
+            blackbox.note_bridge_message(&reply.to_string());
+
+            println!("\nFofoca event received:");
             println!("{}", reply);
 
             continue;
